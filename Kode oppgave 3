@@ -1,0 +1,68 @@
+import numpy as np
+from scipy import stats  # t-test
+import seaborn as sns
+import matplotlib.pyplot as plt
+import pandas as pd
+import statistics
+import pandas as pd # lese data fra csv-fil og bruke DataFrames
+import seaborn as sns # plotting
+sns.set(style = 'whitegrid', font_scale = 1.5) # utseende av plott
+import matplotlib.pyplot as plt # mer plotting
+import numpy as np # matematikk
+
+
+x = [0.24,
+0.23,
+0.23 ,
+0.28 ,
+0.27 ,
+0.28 ,
+0.25 ,
+0.25 ,
+0.28 ,
+0.24 ,
+0.24 ,
+0.28 ] # observert endring med medisin (positivt tall = reduksjon) 
+y = [0.04,
+0.00,
+0.02 ,
+0.06 ,
+0.03 ,
+0.05 ,
+0.02 ,
+0.02 ,
+0.03 ,
+0.01 ,
+0.03 ,
+0.02 ] # observert endring med placebo (positivt tall = reduksjon)
+
+n1 = len(x)
+n2 = len(y)
+
+mean_x = statistics.mean(x)
+mean_y = statistics.mean(y)
+
+sd_x = statistics.stdev(x)
+sd_y = statistics.stdev(y)
+
+# antall frihetsgrader:
+ny = (sd_x**2/n1+sd_y**2/n2)**2/((sd_x**2/n1)**2/(n1-1)+(sd_y**2/n2)**2/(n2-1))
+print("Antall frihetsgrader (ny) = ", ny)
+
+t_kritisk = stats.t.ppf(1-0.05,ny)
+print("t_kritisk = ", t_kritisk)
+
+stats.ttest_ind_from_stats(mean_x, sd_x, n1, mean_y, sd_y, n2, equal_var=False, alternative = 'greater')
+
+mean_x = sum(x)/len(x)
+mean_y = sum(y)/len(y)
+
+
+data = pd.DataFrame({
+    'Tid [sek] før klapp registrert i Mobil 2': x + y,
+    'Omstendighet': ['Inne'] * len(x) + ['Ute'] * len(y)
+})
+plt.figure(figsize=(8, 6))
+sns.boxplot(x='Omstendighet', y='Tid [sek] før klapp registrert i Mobil 2', data=data)
+plt.title('To målinger av lydahastighet')
+plt.show()
